@@ -1,6 +1,6 @@
 # GeoField
 
-Aplicativo mobile para **coleta, medição e organização de informações de terrenos**, pensado para atividades de campo relacionadas à Agrimensura. O diferencial é funcionar **totalmente offline**: os dados são gravados no próprio celular e permanecem salvos mesmo sem internet.
+Aplicativo mobile para **coleta, medição e organização de informações de terrenos**, pensado para atividades de campo relacionadas à Agrimensura. O diferencial é funcionar **totalmente offline**: os dados são gravados no próprio celular e permanecem salvos mesmo sem internet. Quando houver conexão, eles poderão ser sincronizados com a nuvem pelo **Supabase**.
 
 > **Aviso importante:** o GeoField não substitui equipamentos profissionais de levantamento topográfico nem serviços técnicos de Agrimensura. As medições feitas com o GPS convencional do celular são **estimativas**, não medições oficiais nem georreferenciamento certificado.
 
@@ -18,6 +18,7 @@ Aplicativo mobile para **coleta, medição e organização de informações de t
 - [ ] Anotações
 - [ ] Fotografias
 - [ ] Exportação CSV
+- [ ] Integração com Supabase (login, backup e sincronização)
 
 ## Para quem é
 
@@ -33,6 +34,19 @@ Aplicativo mobile para **coleta, medição e organização de informações de t
 - Cálculo estimado de distância, perímetro e área.
 - Anotações e fotografias associadas aos levantamentos e pontos.
 - Exportação de dados em CSV, sem internet.
+- Login de usuários, backup na nuvem e sincronização entre dispositivos com o Supabase.
+
+## Arquitetura: offline primeiro
+
+O GeoField segue a abordagem **offline-first**:
+
+1. Toda a coleta e todos os cálculos acontecem no celular, e os dados são gravados no **SQLite local**, com ou sem internet.
+2. O SQLite é a fonte de verdade do app no dispositivo.
+3. Quando houver conexão, os dados ainda não enviados (controlados pelo campo `sync_status`) serão sincronizados com o **Supabase**.
+4. As fotografias serão enviadas para o armazenamento do Supabase, e o banco guardará apenas a referência.
+5. Os identificadores dos registros usam **UUID**, gerados no próprio celular, para evitar conflitos na sincronização entre dispositivos.
+
+Por isso, nenhuma função de coleta ou cálculo depende de internet. O Supabase é a camada de login, backup e sincronização, e não um requisito para usar o app em campo.
 
 ## Tecnologias
 
@@ -40,6 +54,7 @@ Aplicativo mobile para **coleta, medição e organização de informações de t
 - [geolocator](https://pub.dev/packages/geolocator): GPS e permissões de localização
 - [sqflite](https://pub.dev/packages/sqflite): banco de dados SQLite local
 - `CustomPainter`: desenho do percurso e dos pontos
+- [Supabase](https://supabase.com): autenticação, banco de dados na nuvem e armazenamento de arquivos (sincronização e backup)
 
 ## Como executar
 
@@ -59,6 +74,10 @@ flutter run
 
 Para testar a coleta de GPS, o ideal é usar um **celular real**, ao ar livre. O emulador consegue simular localizações, mas não reproduz a qualidade real do sinal de satélite.
 
+### Configuração do Supabase
+
+A integração com o Supabase ainda não foi implementada. Quando for, as credenciais do projeto **não serão enviadas ao repositório**. As instruções de configuração serão adicionadas aqui.
+
 ## Estrutura do projeto
 
 ```
@@ -73,16 +92,14 @@ A estrutura será ampliada conforme o desenvolvimento (modelos, banco de dados, 
 
 ## Roadmap futuro
 
-Depois da validação do MVP:
+Depois da validação do MVP offline:
 
-- Sincronização com servidor e backup na nuvem
-- Login de usuários
+- Integração com Supabase: login, backup na nuvem e sincronização
 - Mapas offline
 - Compartilhamento de levantamentos
 - Relatórios avançados em PDF
 - Integração com equipamentos GNSS profissionais
 
-## Autores
+## Autor
 
-César Bezerra Leite de Lira
-Walber Santana Santos
+[Seu nome]
